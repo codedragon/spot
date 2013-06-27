@@ -1,0 +1,7 @@
+from django.http import HttpResponse
+from django.generic.base import View
+
+class StatsView(View):
+    def get(self, request):
+        
+        return HttpResponse('result')
