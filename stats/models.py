@@ -7,7 +7,7 @@ class Owner(models.Model):
     last_name = models.CharField(max_length=255,
                                  )
     def __unicode__(self):
-        return self.last_name, self.first_name
+        return self.last_name
 
 class Dog(models.Model):
     dog_name = models.CharField(max_length=255,
