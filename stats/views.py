@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.shortcuts import render
 #from django.shortcuts import get_object_or_404, render
 #from django.http import HttpResponseRedirect
 #from django.core.urlresolvers import reverse
@@ -7,7 +7,7 @@ from django.http import HttpResponse
 #from stats.models import Owner,Dog
 
 def home_page(request):
-    return HttpResponse('<html><title>Spot Database</title></html>')
+    return render(request, 'home.html')
 
 #class ListView(generic.ListView):
 #    template_name = 'stats/index.html'
