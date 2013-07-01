@@ -26,7 +26,7 @@ class NewVisitorTest(unittest.TestCase):
         inputbox = self.browser.find_element_by_id('id_new_first_name')
         self.assertEqual(
             inputbox.get_attribute('placeholder'),
-            'What is your first name?'
+            'Enter your first name'
             )
         # She types "Emily" into the text box
         inputbox.send_keys('Emily')
@@ -34,7 +34,7 @@ class NewVisitorTest(unittest.TestCase):
         inputbox = self.browser.find_element_by_id('id_new_last_name')        
         self.assertEqual(        
             inputbox.get_attribute('placeholder'),
-            'What is your last name?'
+            'Enter your last name'
             )
         # She types "Elizabeth" into the text box
         inputbox.send_keys('Elizabeth')
@@ -42,7 +42,7 @@ class NewVisitorTest(unittest.TestCase):
         inputbox = self.browser.find_element_by_id('id_new_dog_name')        
         self.assertEqual(
             inputbox.get_attribute('placeholder'),
-            'What is your dogs name?'
+            "Enter your dog's name"
             )
         # She types "Clifford" into the second text box
         inputbox.send_keys('Clifford')        
@@ -55,10 +55,12 @@ class NewVisitorTest(unittest.TestCase):
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
         self.assertTrue(
-            any(row.text == 'Owner: Emily Elizabeth' for row in rows)
+            any(row.text == 'Owner: Emily Elizabeth' for row in rows),
+            "New Owner name did not appear in table"
         )
         self.assertTrue(
-            any(row.text == 'Dog: Clifford' for row in rows)
+            any(row.text == 'Dog: Clifford' for row in rows),
+            "New Dog name did not appear in table"
         )
                           
         # There is now a button inviting her to upload a photo of her dog.
