@@ -22,7 +22,7 @@ class NewVisitorTest(unittest.TestCase):
         header_text = self.browser.find_element_by_tag_name('h1').text
         self.assertIn('Spot', header_text)
 
-        # She is invited to enter her name and her dogs name
+        # She is invited to enter her name and her dogs name and hit a submit button
         inputbox = self.browser.find_element_by_id('id_new_first_name')
         self.assertEqual(
             inputbox.get_attribute('placeholder'),
@@ -36,7 +36,7 @@ class NewVisitorTest(unittest.TestCase):
             inputbox.get_attribute('placeholder'),
             'Enter your last name'
             )
-        # She types "Elizabeth" into the text box
+        # She types "Elizabeth" into the second text box
         inputbox.send_keys('Elizabeth')
 
         inputbox = self.browser.find_element_by_id('id_new_dog_name')        
@@ -44,25 +44,25 @@ class NewVisitorTest(unittest.TestCase):
             inputbox.get_attribute('placeholder'),
             "Enter your dog's name"
             )
-        # She types "Clifford" into the second text box
+        # She types "Clifford" into the third text box
         inputbox.send_keys('Clifford')        
         
-        # When she hits enter, the page updates, and the page shows
+        # When she hits the submit button, the page updates, and the page shows
         # "owner: Emily Elizabeth"
         # "dog: Clifford"
-        inputbox.send_keys(Keys.ENTER)
+        
+        submitbutton = self.browser.find_element_by_id('id_submit')
+        self.assertEqual(
+            submitbutton.get_attribute('placeholder'),
+            "Click to Continue"
+            )
+        submitbutton.click()
         
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
-        self.assertTrue(
-            any(row.text == 'Owner: Emily Elizabeth' for row in rows),
-            "New Owner name did not appear in table"
-        )
-        self.assertTrue(
-            any(row.text == 'Dog: Clifford' for row in rows),
-            "New Dog name did not appear in table"
-        )
-                          
+        self.assertIn('Owner: Emily Elizabeth', [row.text for row in rows])
+        #self.assertIn('Dog: Clifford', [row.text for row in rows])
+
         # There is now a button inviting her to upload a photo of her dog.
         self.fail('Finish the test!')
         

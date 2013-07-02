@@ -13,7 +13,7 @@ from stats.views import home_page
 
 class HomePageTest(TestCase):
 
-    def test_root_rul_resolves_to_home_page_view(self):
+    def test_root_url_resolves_to_home_page_view(self):
         found = resolve('/')
         self.assertEqual(found.func, home_page)
         
@@ -21,6 +21,26 @@ class HomePageTest(TestCase):
         request = HttpRequest()
         response = home_page(request)
         expected_html = render_to_string('home.html')
+        self.assertEqual(response.content, expected_html)
+
+    def test_home_page_can_save_a_POST_request(self):
+        request = HttpRequest()
+        request.method = 'POST'
+        request.POST['first_text','last_text','dog_text'] = ['first_name',
+                                                             'last_name',
+                                                             'dog_name']
+        
+        response = home_page(request)
+
+        self.assertIn('first_name', response.content)
+        self.assertIn('last_name', response.content)
+        self.assertIn('dog_name', response.content)
+        expected_html = render_to_string(
+            'home.html',
+            {'new_first_text': 'first_name',
+             'new_last_text': 'last_name',
+             'new_dog_text': 'dog_name'}
+            )
         self.assertEqual(response.content, expected_html)
 
 #class StatsTestCase(TestCase):
