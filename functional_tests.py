@@ -61,9 +61,10 @@ class NewVisitorTest(unittest.TestCase):
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
         self.assertIn('Owner: Emily Elizabeth', [row.text for row in rows])
-        #self.assertIn('Dog: Clifford', [row.text for row in rows])
+        self.assertIn('Dog: Clifford', [row.text for row in rows])
 
-        # There is now a button inviting her to upload a photo of her dog.
+        # There is now a button inviting her to upload a photo of her dog, 
+
         self.fail('Finish the test!')
         
         # She presses the button and an upload file dialog box appears.
