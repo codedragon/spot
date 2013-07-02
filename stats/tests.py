@@ -10,6 +10,7 @@ from django.http import HttpRequest
 from django.template.loader import render_to_string
 
 from stats.views import home_page
+from stats.models import Owner
 
 class HomePageTest(TestCase):
 
@@ -50,6 +51,24 @@ class HomePageTest(TestCase):
         #     'new_dog_text': 'dog_name'}
         #    )
         #self.assertEqual(response.content, expected_html)
+
+class OwnerModelTest(TestCase):
+    def test_saving_and_rerieving_first_names(self):
+        first_f_name = Owner()
+        first_f_name.first_name = 'first first name'
+        first_f_name.save()
+
+        second_f_name= Owner()
+        second_f_name.first_name = 'second first name'
+        second_f_name.save()
+        
+        saved_names = Owner.objects.all()
+        self.assertEqual(saved_names.count(), 2)
+        
+        first_saved_f_name = saved_names[0]
+        second_saved_f_name = saved_names[1]
+        self.assertEqual(first_saved_f_name.first_name, 'first first name')
+        self.assertEqual(second_saved_f_name.first_name, 'second first name')
 
 #class StatsTestCase(TestCase):
 #    def setUp(self):
