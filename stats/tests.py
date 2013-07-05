@@ -4,7 +4,7 @@ Stuff to test (edge cases) what if first, last or dogs name are the same?
 
 """
 
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.core.urlresolvers import resolve
 from django.http import HttpRequest
 from django.template.loader import render_to_string
@@ -26,43 +26,19 @@ class HomePageTest(TestCase):
         self.assertEqual(response.content, expected_html)
 
     def test_home_page_can_save_a_POST_request(self):
-        request = HttpRequest()
-        request.method = 'POST'
-        request.POST['first_text','last_text','dog_text'] = ['first name',
-                                                             'last name',
-                                                             'dog name']
-        
-        #request.POST['first_name'] = 'first name'        
-        
-        response = home_page(request)
+        client = Client()
+        response = client.post(
+            '/',
+            data = {'first_name': 'first name',
+                    'last_name': 'last name',
+                    'dog_name': 'dog name'}
+            )
 
-        #self.assertEqual(Owner.objects.all().count(), 1)
-        new_name = Owner.objects.all()[0]
-        print new_name.first_name
-        #self. assertEqual(new_name.first_name, 'first name')
-
+        self.assertEqual(response.status_code, 200)
         self.assertIn('first name', response.content)
-
-        self.assertIn('last_name', response.content)
-
-        expected_html = render_to_string(
-            'home.html',
-            {'new_first_name': 'first name',
-             'new_last_name': 'last name',
-             'new_dog_name': 'dog name',
-             })
-
-        self.assertEqual(response.content, expected_html)
-        #
-        #self.assertIn('dog_name', response.content)
-        #expected_html = render_to_string(
-        #    'home.html',
-        #    {'new_first_text': 'first_name',
-        #     'new_last_text': 'last_name',
-        #     'new_dog_text': 'dog_name'}
-        #    )
-        #self.assertEqual(response.content, expected_html)
-
+        self.assertIn('last name', response.content)
+        self.assertIn('dog name', response.content)
+        
 class OwnerModelTest(TestCase):
     def test_saving_and_rerieving_first_names(self):
         first_f_name = Owner()
