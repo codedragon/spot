@@ -1,8 +1,8 @@
-import unittest
+from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
-class NewVisitorTest(unittest.TestCase):
+class NewVisitorTest(LiveServerTestCase):
 
     def setUp(self):
         self.browser  = webdriver.Firefox()
@@ -15,7 +15,7 @@ class NewVisitorTest(unittest.TestCase):
 
         # Emily has heard of a cool new site that lets her upload a photo of her
         # dog and look at pictures of her friend's dogs. She goes to check it out.
-        self.browser.get('http://localhost:8000')
+        self.browser.get(self.live_server_url)
 
         # She notices the page title and header mention the site's name 'spot'
         self.assertIn('Spot', self.browser.title)
@@ -87,6 +87,4 @@ class NewVisitorTest(unittest.TestCase):
  
         # She sees a search box, and searches for a dog by dog owner name.
         
-if __name__ == '__main__':
-    unittest.main()
 
