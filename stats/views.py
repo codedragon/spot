@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from stats.models import Owner, Dog
+
 #from django.shortcuts import get_object_or_404, render
 #from django.http import HttpResponseRedirect
 #from django.core.urlresolvers import reverse
@@ -7,10 +9,23 @@ from django.shortcuts import render
 #from stats.models import Owner,Dog
 
 def home_page(request):
+    owner = Owner.objects.create()
+    owner.first_name = request.POST.get('first_name', '')
+    owner.last_name = request.POST.get('last_name', '')
+    owner.save()
+
+    dog = Dog.objects.create(owner=owner)
+    dog.dog_name = request.POST.get('dog_name', '')
+    print owner.first_name
+    print owner.last_name
+    print dog.dog_name
+
+    dog.save()
+    
     return render(request, 'home.html', {
-            'new_first_text': request.POST.get('first_text', ''),
-            'new_last_text': request.POST.get('last_text', ''),
-            'new_dog_text': request.POST.get('dog_text', ''),
+            'new_first_name': owner.first_name,
+            'new_last_name': owner.last_name,
+            'new_dog_name': dog.dog_name,
             })
 
 #class ListView(generic.ListView):
@@ -24,4 +39,7 @@ def home_page(request):
 #class DetailView(generic.DetailView):
 #    model = Owner
 #    template_name = 'stats/detail.html'
+
+
+
 
