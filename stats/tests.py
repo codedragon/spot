@@ -25,6 +25,12 @@ class HomePageTest(TestCase):
         expected_html = render_to_string('home.html')
         self.assertEqual(response.content, expected_html)
 
+    def test_home_page_only_saves_when_necessary(self):
+        request = HttpRequest()
+        home_page(request)
+        self.assertEqual(Owner.objects.all().count(), 0)
+        self.assertEqual(Dog.objects.all().count(), 0)
+        
     def test_home_page_can_save_a_POST_request(self):
         client = Client()
         response = client.post(
