@@ -27,7 +27,14 @@ def home_page(request):
 def view_owner(request):
     owners = Owner.objects.all()
     dogs = Dog.objects.all()
-    return render(request, 'home.html', {'owners': owners, 'dogs': dogs})
+    return render(request, 'index.html', {'owner': owners,
+                                          'dog': dogs})
+
+    #return render(request, 'home.html', {'new_first_name': owners.first_name,
+    #                                     'new_last_name': owners.last_name,
+    #                                     'new_dog_name': dogs.dog_name
+    #                                     })
+                                 
 
 def new_owner(request):
     owner = Owner.objects.create()

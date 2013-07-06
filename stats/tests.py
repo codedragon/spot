@@ -34,22 +34,14 @@ class HomePageTest(TestCase):
     def test_home_page_can_save_a_POST_request(self):
         client = Client()
         response = client.post(
-            '/stats/new',
+            '/stats/new/',
             data = {'first_name': 'first name',
                     'last_name': 'last name',
                     'dog_name': 'dog name'}
             )
 
-        #self.assertIn('first name', response.content)
-        #self.assertIn('last name', response.content)
-        #self.assertIn('dog name', response.content)
-
-        print response
-
         self.assertEqual(response.status_code, 302)
-    
         self.assertRedirects(response,'/stats/the-only-owner/')
-        #self.assertRedirects(response,'/stats/new/')
 
 class OwnerModelTest(TestCase):
     def test_saving_and_rerieving_first_names(self):
@@ -68,6 +60,19 @@ class OwnerModelTest(TestCase):
         second_saved_f_name = saved_names[1]
         self.assertEqual(first_saved_f_name.first_name, 'first first name')
         self.assertEqual(second_saved_f_name.first_name, 'second first name')
+
+class StatsViewTest(TestCase):
+
+    def test_stats_view_displays_all_owners(self):
+        owner = Owner.objects.create(first_name='name 1',last_name='name 2')
+        Dog.objects.create(dog_name='name 3', owner=owner)
+        
+        client = Client()
+        response = client.get('/stats/the-only-owner/')
+
+        self.assertIn('name 1', response.content)
+        self.assertIn('name 2', response.content)
+        self.assertIn('name 3', response.content)
 
 #class StatsTestCase(TestCase):
 #    def setUp(self):

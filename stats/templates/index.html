@@ -1,0 +1,16 @@
+<html>
+  <head>
+    <title>Spot Database</title>
+  </head>
+  <body>
+    <h1>Spot Database</h1>
+    <table id="id_owner_table">
+      {% for owner in owner.all %}
+      <tr><td>{{ owner.first_name }} {{ owner.last_name }}</td></tr>
+      {% endfor %}
+      {% for dog in dog.all %}
+      <tr><td>{{ dog.dog_name }}</td></tr>
+      {% endfor%}
+    </table>
+  </body>
+</html>
