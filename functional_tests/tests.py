@@ -47,7 +47,8 @@ class NewVisitorTest(LiveServerTestCase):
         # She types "Clifford" into the third text box
         inputbox.send_keys('Clifford')        
         
-        # When she hits the submit button, the page updates, and the page shows
+        # When she hits the submit button, she is re-directed to a page that 
+        # shows the info she just submitted
         # "owner: Emily Elizabeth"
         # "dog: Clifford"
         

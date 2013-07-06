@@ -28,17 +28,23 @@ class HomePageTest(TestCase):
     def test_home_page_can_save_a_POST_request(self):
         client = Client()
         response = client.post(
-            '/',
+            '/stats/new',
             data = {'first_name': 'first name',
                     'last_name': 'last name',
                     'dog_name': 'dog name'}
             )
 
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('first name', response.content)
-        self.assertIn('last name', response.content)
-        self.assertIn('dog name', response.content)
-        
+        #self.assertIn('first name', response.content)
+        #self.assertIn('last name', response.content)
+        #self.assertIn('dog name', response.content)
+
+        print response
+
+        self.assertEqual(response.status_code, 302)
+    
+        self.assertRedirects(response,'/stats/the-only-owner/')
+        #self.assertRedirects(response,'/stats/new/')
+
 class OwnerModelTest(TestCase):
     def test_saving_and_rerieving_first_names(self):
         first_f_name = Owner()
