@@ -62,7 +62,7 @@ class NewVisitorTest(LiveServerTestCase):
         emily_elizabeth_url = self.browser.current_url
         self.assertRegexpMatches(emily_elizabeth_url, '/stats/.+')
         
-        table = self.browser.find_element_by_id('id_list_table')
+        table = self.browser.find_element_by_id('id_owner_table')
         rows = table.find_elements_by_tag_name('tr')
         self.assertIn('Owner: Emily Elizabeth', [row.text for row in rows])
         self.assertIn('Dog: Clifford', [row.text for row in rows])

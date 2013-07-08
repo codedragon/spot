@@ -52,18 +52,23 @@ def new_owner(request):
     #                                          'new_last_name': owner.last_name,
     #                                          'new_dog_name': dog.dog_name,})
     
-    return redirect('/stats/the-only-owner/')
+    return redirect('/stats/%d/' % (owner.id,))
     #return render(request, 'home.html', {
     #        'new_first_name': owner.first_name,
     #        'new_last_name': owner.last_name,
     #        'new_dog_name': dog.dog_name,
     #        })
 
-def temp_owner(request):
-    owners = Owner.objects.all()
-    dogs = Dog.objects.all()
-    return render(request, 'new_owner.html', {'owner': owners,
-                                              'dog': dogs})
+def temp_owner(request, owner_id):
+    owner = Owner.objects.get(id=owner_id)
+    dog = Dog.objects.get(owner=owner)
+
+    #return render(request, 'new_owner.html',{'first_name':owner_names.first_name,
+    #                                         'last_name':owner_names.last_name,
+    #                                         'dog_name':dog.dog_name,})
+
+    return render(request, 'new_owner.html', {'owner': owner,
+                                              'dog': dog})
 
 
 #class ListView(generic.ListView):

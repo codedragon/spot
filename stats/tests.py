@@ -2,6 +2,7 @@
 
 Stuff to test (edge cases) what if first, last or dogs name are the same? 
 what if blanks for a name or blanks in name? esp. when used for urls.
+more than one dog?
 """
 
 from django.test import TestCase, Client
@@ -75,30 +76,38 @@ class NewStatsTest(TestCase):
                     'dog_name': 'dog name'}
             )
 
-        new_name = Owner.objects.all()[0]
-        print new_name
-        self.assertEqual(new_name.last_name, 'last name')
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response,'/stats/the-only-owner/')
+        self.assertEqual(Owner.objects.all().count(), 1)
+        new_owner = Owner.objects.all()[0]
+        self.assertEqual(Dog.objects.all().count(), 1)
+        new_dog = Dog.objects.all()[0]
+        self.assertEqual(new_owner.last_name, 'last name')
+        self.assertEqual(new_dog.dog_name, 'dog name')
+
+        self.assertRedirects(response,'/stats/%d/' % (new_owner.id,))
     
     def test_stats_view_displays_only_new_owner(self):
         owner = Owner.objects.create(first_name='name 1a',last_name='name 1b')
-        Dog.objects.create(dog_name='name 1c', owner=owner)
-        
+        dog = Dog.objects.create(dog_name='name 1c', owner=owner)
+
+        self.assertEqual(owner.last_name, 'name 1b')
+        self.assertEqual(dog.dog_name, 'name 1c')
+
         other_owner = Owner.objects.create(first_name='name 2a',last_name='name 2b')
         Dog.objects.create(dog_name='name 2c', owner=other_owner)
 
         client = Client()
+        print owner.id
         response = client.get('/stats/%d/' % (owner.id,))
-        response.content()
-       
+        
+        self.assertTemplateUsed(response, 'new_owner.html')       
+        
         self.assertIn('name 1a', response.content)
         self.assertIn('name 1b', response.content)
         self.assertIn('name 1c', response.content)
-        self.assertInNotIn('name 2a', response.content)
-        self.assertInNotIn('name 2b', response.content)
-        self.assertInNotIn('name 2c', response.content)
-        self.assertTemplateUsed(response, 'new_owner.html')
+        self.assertNotIn('name 2a', response.content)
+        self.assertNotIn('name 2b', response.content)
+        self.assertNotIn('name 2c', response.content)
+
         
 
 #class StatsTestCase(TestCase):
