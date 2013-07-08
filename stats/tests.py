@@ -32,23 +32,41 @@ class HomePageTest(TestCase):
         self.assertEqual(Owner.objects.all().count(), 0)
         self.assertEqual(Dog.objects.all().count(), 0)
         
-class OwnerModelTest(TestCase):
+class OwnerAndDogModelsTest(TestCase):
     def test_saving_and_rerieving_first_names(self):
-        first_f_name = Owner()
-        first_f_name.first_name = 'first first name'
-        first_f_name.save()
+        first_owner = Owner()
+        first_owner.first_name = 'first owner'
+        first_owner.save()
+        
+        first_dog = Dog()
+        first_dog.dog_name = 'first dog'
+        first_dog.owner = first_owner
+        first_dog.save()
 
-        second_f_name = Owner()
-        second_f_name.first_name = 'second first name'
-        second_f_name.save()
+        second_owner = Owner()
+        second_owner.first_name = 'second owner'
+        second_owner.save()
         
-        saved_names = Owner.objects.all()
-        self.assertEqual(saved_names.count(), 2)
+        second_dog = Dog()
+        second_dog.dog_name = 'second dog'
+        second_dog.owner = second_owner
+        second_dog.save()
+
+        saved_owners = Owner.objects.all()
+        self.assertEqual(saved_owners.count(), 2)
+        self.assertEqual(saved_owners[0], first_owner)
+        saved_dogs = Dog.objects.all()
+        self.assertEqual(saved_dogs.count(), 2)
         
-        first_saved_f_name = saved_names[0]
-        second_saved_f_name = saved_names[1]
-        self.assertEqual(first_saved_f_name.first_name, 'first first name')
-        self.assertEqual(second_saved_f_name.first_name, 'second first name')
+        first_saved_owner = saved_owners[0]
+        second_saved_owner = saved_owners[1]
+        first_saved_dog = saved_dogs[0]
+        second_saved_dog = saved_dogs[1]
+
+        self.assertEqual(first_saved_owner.first_name, 'first owner')
+        self.assertEqual(second_saved_owner.first_name, 'second owner')
+        self.assertEqual(first_saved_dog.dog_name, 'first dog')
+        self.assertEqual(second_saved_dog.dog_name, 'second dog')
 
 # Don't care about this class yet, just get new stats working for next bit of FT
 #class StatsIndexTest(TestCase):
