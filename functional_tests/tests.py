@@ -60,7 +60,7 @@ class NewVisitorTest(LiveServerTestCase):
         submitbutton.click()
         
         emily_elizabeth_url = self.browser.current_url
-        self.assertRegexpMatches(emily_elizabeth_url, 'stats/.+')
+        self.assertRegexpMatches(emily_elizabeth_url, '/stats/.+')
         
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
@@ -119,7 +119,8 @@ class NewVisitorTest(LiveServerTestCase):
 
         # She notices a link to the index, and clicks that.
 
-        # She sees a list of dogs with their name and a resized thumbnail image
+        # She sees a list of dogs with their name and a resized thumbnail image,
+        # including hers and Fred Flinstone's.
 
         # When she clicks on a dog name display light box that shows:
         # the dog name

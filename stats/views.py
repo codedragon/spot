@@ -9,7 +9,13 @@ from stats.models import Owner, Dog
 #from stats.models import Owner,Dog
 
 def home_page(request):
+    #if request.method == 'POST':
+    #    owner = Owner.objects.create(first_name=request.POST['first_name'], 
+    #                                 last_name=request.POST['last_name'])
+    #    dog = Dog.objects.create(dog_name=request.POST['dog_name'], owner=owner)
+    #    return redirect('/')
     return render(request, 'home.html')
+    
     #owner = Owner.objects.create()
     #owner.first_name = request.POST.get('first_name', '')
     #owner.last_name = request.POST.get('last_name', '')
@@ -24,7 +30,7 @@ def home_page(request):
     #dog.save()
     
 
-def view_owner(request):
+def view_owners(request):
     owners = Owner.objects.all()
     dogs = Dog.objects.all()
     return render(request, 'index.html', {'owner': owners,
@@ -37,12 +43,15 @@ def view_owner(request):
                                  
 
 def new_owner(request):
-    owner = Owner.objects.create()
+    #owner = Owner.objects.create()
     owner = Owner.objects.create(first_name=request.POST['first_name'], 
                                  last_name=request.POST['last_name'])
-    Dog.objects.create(dog_name=request.POST['dog_name'], owner=owner)
+    dog = Dog.objects.create(dog_name=request.POST['dog_name'], owner=owner)
     
-    #return render(request, 'home.html')
+    #return render(request, 'new_owner.html', {'new_first_name': owner.first_name,
+    #                                          'new_last_name': owner.last_name,
+    #                                          'new_dog_name': dog.dog_name,})
+    
     return redirect('/stats/the-only-owner/')
     #return render(request, 'home.html', {
     #        'new_first_name': owner.first_name,
@@ -50,6 +59,11 @@ def new_owner(request):
     #        'new_dog_name': dog.dog_name,
     #        })
 
+def temp_owner(request):
+    owners = Owner.objects.all()
+    dogs = Dog.objects.all()
+    return render(request, 'new_owner.html', {'owner': owners,
+                                              'dog': dogs})
 
 
 #class ListView(generic.ListView):
