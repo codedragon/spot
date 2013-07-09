@@ -7,13 +7,7 @@ from django.conf.urls import patterns, include, url
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'stats.views.home_page', name='home'),
-    url(r'^stats/all-owners/$', 'stats.views.view_owners',
-        name='view_owners'),
-    url(r'^stats/(.+)/$', 'stats.views.temp_owner', name='temp_owner'),
-    url(r'^stats/new$', 'stats.views.new_owner', name='new_owner'),
-
-    #url(r'^stats/the-only-owner/$', 'stats.views.temp_owner', name='temp_owner'),
-    #url(r'^stats/new$', 'stats.views.new_owner', name='new_owner'),
+    url(r'^stats/', include('stats.urls')),
                        
     # url(r'^rover/', include('rover.foo.urls')),
 
