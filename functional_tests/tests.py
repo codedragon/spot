@@ -108,6 +108,11 @@ class NewVisitorTest(LiveServerTestCase):
         
         # There is now a button inviting her to upload a photo of her dog, 
 
+        element = self.browser.find_element_by_id('file_upload')
+        element.send_keys('~/Desktop/sebastian.JPG')
+        #Assert that we have something returned as expected
+        self.assertNotEqual(element,None)
+
         self.fail('Finish the test!')
         
         # She presses the button and an upload file dialog box appears.

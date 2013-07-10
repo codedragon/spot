@@ -123,6 +123,7 @@ INSTALLED_APPS = (
     'south',
     'stats',
     'functional_tests',
+    'imagekit',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:

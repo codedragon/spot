@@ -68,6 +68,27 @@ class OwnerAndDogModelsTest(TestCase):
         self.assertEqual(first_saved_dog.dog_name, 'first dog')
         self.assertEqual(second_saved_dog.dog_name, 'second dog')
 
+    def test_saving_photo_to_Dog(self):
+        owner = Owner()
+        owner.first_name = 'jane'
+        owner.last_name = 'doe'
+        owner.save()
+        dog = Dog()
+        dog.dog_name = 'fido'
+        dog.owner = owner
+        dog.save()
+        self.assertEqual(bool(dog.photo), False)
+        f = open('/Users/maria/Desktop/sebastian.JPG')
+        try:
+            dog.photo = f
+        finally:
+            f.close()
+            
+        self.assertEqual(bool(dog.photo), True)
+
+    def test_thumbnail_created_in_Dog(self):
+        pass
+
 # Don't care about this class yet, just get new stats working for next bit of FT
 #class StatsIndexTest(TestCase):
 #
@@ -126,7 +147,16 @@ class NewStatsTest(TestCase):
         self.assertNotIn('name 2b', response.content)
         self.assertNotIn('name 2c', response.content)
 
+    def test_stats_view_uploads_a_file(self):
+        try:
+            f = open('/Users/maria/Desktop/sebastian.JPG')
+            postdata = {'datatype': 'photo','datafile':f}
         
+            client = Client()
+            response= client.post('/stats/%d/', postdata)
+            self.failUnlessEqual(response.status_code, 200)
+        finally:
+            f.close()
 
 #class StatsTestCase(TestCase):
 #    def setUp(self):
