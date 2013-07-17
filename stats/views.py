@@ -1,5 +1,6 @@
 from django.shortcuts import redirect, render
 from stats.models import Owner, Dog
+from .forms import UploadFileImage
 
 #from django.shortcuts import get_object_or_404, render
 #from django.http import HttpResponseRedirect
@@ -22,15 +23,43 @@ def post_owner(request):
                                  last_name=request.POST['last_name'])
     dog = Dog.objects.create(dog_name=request.POST['dog_name'], owner=owner)
     
-    return redirect('/stats/%d/' % (owner.id,))
+    return redirect('/stats/%d/new_photo' % (owner.id,))
+    #return redirect('/stats/%d/' % (owner.id,))
 
-def new_owner(request, owner_id):
+def update_owner(request, owner_id):
     owner = Owner.objects.get(id=owner_id)
     dog = Dog.objects.get(owner=owner)
 
-    return render(request, 'new_owner.html', {'owner': owner,
-                                              'dog': dog})
+    return render(request, 'update_owner.html', {'owner': owner,
+                                                 'dog': dog,
+                                                 })
 
+def add_photo(request, owner_id):
+    owner = Owner.objects.get(id=owner_id)
+    dog = Dog.objects.get(owner=owner) 
+
+    if request.method == 'POST':
+        form = UploadFileImage(request.POST, request.FILES)
+        if form.is_valid():
+            dog.photo = form.cleaned_data['photo']
+            #dog.photo = request.FILES['photo']
+            dog.save()
+            #dog.photo.save(request.FILES['photo'])
+            #dog.photo = request.FILES['photo']
+            return redirect('/stats/%d/' % (owner.id,))
+
+    return render(request, 'update_owner.html', {'owner': owner,
+                                                     'dog': dog,
+                                                     })
+    
+    #dog.photo = request.POST.get('photo')
+    #dog.photo.save()
+    #dog.photo=request.POST['photo']
+    #except (KeyError, Dog.DoesNotExist):
+    #    return render(request, 'home.html', {
+    #                  'error_message': "You need to enter your dog's name."})
+
+    #return redirect('/stats/%d/' % (owner.id,))
 
 #class ListView(generic.ListView):
 #    template_name = 'stats/index.html'

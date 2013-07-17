@@ -1,0 +1,32 @@
+<html>
+  <head>
+    <title>Spot Test Database</title>
+  </head>
+  <body>
+    <h1>Your Information</h1>
+    <h2>Upload a Photo of your Dog!</h2>
+    <form enctype="multipart/form-data" method="POST" id="file_upload" action="/stats/{{ owner.id}}/new_photo" >
+      {% csrf_token %}   
+      <p>
+	<input id="photo_upload" type="file" class="" name="photo">
+      </p>
+      <input type="submit" value="Submit" id="photo_submit"/>
+    </form>
+    <a href="/stats/list_all">See All Dogs and Owners</a>
+      <table id="id_owner_table" align="center">
+	<tr><td>Owner: {{ owner.first_name }} {{ owner.last_name}}</td></tr>
+	<tr><td>Dog: {{ dog.dog_name }}</td></tr>
+      </table>
+    <div style="text-align: center">      
+      <IMG SRC= {% if dog.photo %}
+	   {{ MEDIA_URL}}{{ dog.photo }} 
+	   {% else %}
+	   {% load staticfiles %}
+	   "{% static "stats/example-dog.jpg" %}"
+	   {% endif %}/>
+      {% if not dog.photo %}
+      <p> Image By Stuart Miles from <a href="http://www.freedigitalphotos.net/images/Dogs_g59-Wooden_Block_With_Dog_Text_p67098.html">freedigitalphotos.net</a></p>
+      {% endif %}
+    </div>
+  </body>
+</html>

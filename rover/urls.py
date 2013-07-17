@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.conf.urls.static import static
 from django.conf.urls import patterns, include, url
 
 # Uncomment the next two lines to enable the admin:
@@ -8,6 +10,7 @@ urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'stats.views.home_page', name='home'),
     url(r'^stats/', include('stats.urls')),
+
                        
     # url(r'^rover/', include('rover.foo.urls')),
 
@@ -17,4 +20,5 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     #url(r'^admin/', include(admin.site.urls)),
     #url(r'^stats/', include('stats.urls'))
-)
+) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

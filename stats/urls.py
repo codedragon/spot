@@ -6,9 +6,10 @@ from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'^all-owners/$', 'stats.views.view_owners',
+    url(r'^list_all$', 'stats.views.view_owners',
         name='view_owners'),
-    url(r'^(.+)/$', 'stats.views.new_owner', name='new_owner'),
+    url(r'^(.+)/$', 'stats.views.update_owner', name='update_owner'),
+    url(r'^(.+)/new_photo$', 'stats.views.add_photo', name='add_photo'),
     url(r'^new$', 'stats.views.post_owner', name='post_owner'),
 
     # url(r'^rover/', include('rover.foo.urls')),

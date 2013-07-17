@@ -89,40 +89,54 @@ class NewVisitorTest(LiveServerTestCase):
         inputbox.send_keys('Dino')        
         
         # When he hits the submit button, he is re-directed to a page with
-        # a unique URL that shows the info he just submitted
+        # a unique URL that shows the info he just submitted and allows for 
+        # a photo upload
         # "owner: Fred Flinstone"
         # "dog: Dino"
         
         submitbutton = self.browser.find_element_by_id('id_submit')
         submitbutton.click()
         fred_flinstone_url = self.browser.current_url
-        self.assertRegexpMatches(fred_flinstone_url, '/stats/.+')
+        self.assertRegexpMatches(fred_flinstone_url, '/stats/.+/new_photo')
         self.assertNotEqual(fred_flinstone_url, emily_elizabeth_url)
         
         # again, there is no trace of Emily's info
-        self.browser.get(self.live_server_url)
         page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('Emily', page_text)
         self.assertNotIn('Elizabeth', page_text)
         self.assertNotIn('Clifford', page_text)
         
-        # There is now a button inviting her to upload a photo of her dog, 
+        # There is now a button inviting him to upload a photo of his dog, 
+        element = self.browser.find_element_by_id('photo_upload')
+        # he enters the path to his photo
+        element.send_keys('~/Desktop/skull-flower-bcard.jpg')
 
-        element = self.browser.find_element_by_id('file_upload')
-        element.send_keys('~/Desktop/sebastian.JPG')
-        #Assert that we have something returned as expected
+        # Assert that we have something returned as expected
         self.assertNotEqual(element,None)
 
-        self.fail('Finish the test!')
-        
-        # She presses the button and an upload file dialog box appears.
-
-        # She navigates to a photo of her dog and hits the upload button.
-
+        # And clicks the submit button
+        submitbutton = self.browser.find_element_by_id('photo_submit')
+        submitbutton.click()
+                
         # The page updates, and now shows the picture of her dog,
         # along with her name and dog's name.
-
+        new_fred_url = self.browser.current_url
+        import time
+        time.sleep(5)
+        self.assertRegexpMatches(new_fred_url, '/stats/.+')
+        elements = self.browser.find_element_by_tag_name('IMG')
+        image = elements.get_attribute('src');        
+        self.assertIn('skull-flower-bcard.jpg', image)
+        
         # She notices a link to the index, and clicks that.
+        index_link = self.browser.find_element_by_tag_name('a')
+        self.assertEqual(
+            index_link.get_attribute('text'),
+            "See All Dogs and Owners"
+            )
+        index_link.click()
+
+        self.fail('Finish the test!')
 
         # She sees a list of dogs with their name and a resized thumbnail image,
         # including hers and Fred Flinstone's.

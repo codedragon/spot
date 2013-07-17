@@ -2,17 +2,19 @@
 
 Stuff to test (edge cases) what if first, last or dogs name are the same? 
 what if blanks for a name or blanks in name? esp. when used for urls.
-more than one dog?
+more than one dog? What happens if 2 photos are uploaded with same name?
 """
 
 from django.test import TestCase, Client
 from django.core.urlresolvers import resolve
 from django.http import HttpRequest
 from django.template.loader import render_to_string
+from django.core.files import File
 
-from stats.views import home_page
+from stats.views import home_page, view_owners
 from stats.models import Owner
 from stats.models import Dog
+from stats.forms import UploadFileImage
 
 class HomePageTest(TestCase):
 
@@ -69,40 +71,47 @@ class OwnerAndDogModelsTest(TestCase):
         self.assertEqual(second_saved_dog.dog_name, 'second dog')
 
     def test_saving_photo_to_Dog(self):
+        # have to create an owner so dog.owner not blank (ForeignKey)
         owner = Owner()
-        owner.first_name = 'jane'
-        owner.last_name = 'doe'
         owner.save()
         dog = Dog()
-        dog.dog_name = 'fido'
+        dog.dog_name = 'spot'
         dog.owner = owner
         dog.save()
         self.assertEqual(bool(dog.photo), False)
-        f = open('/Users/maria/Desktop/sebastian.JPG')
+        file_path = '/Users/maria/Desktop/sebastian.JPG'
         try:
-            dog.photo = f
+            f = open(file_path)
+            dog.photo.save(file_path, File(f), save=True)
         finally:
             f.close()
-            
-        self.assertEqual(bool(dog.photo), True)
 
+        self.assertEqual(bool(dog.photo), True)
+        saved_dog = Dog.objects.all()[0]
+        self.assertEqual(saved_dog.dog_name, 'spot')
+        self.assertEqual(saved_dog.photo.name, u'dogs/sebastian.JPG')
+        
     def test_thumbnail_created_in_Dog(self):
         pass
 
-# Don't care about this class yet, just get new stats working for next bit of FT
-#class StatsIndexTest(TestCase):
-#
-#    def test_stats_view_displays_all_owners(self):
-#        owner = Owner.objects.create(first_name='name 1',last_name='name 2')
-#        Dog.objects.create(dog_name='name 3', owner=owner)
-#        
-#        client = Client()
-#        response = client.get('/stats/the-only-owner/')
-#
-#        self.assertIn('name 1', response.content)
-#        self.assertIn('name 2', response.content)
-#        self.assertIn('name 3', response.content)
-#        self.assertTemplateUsed(response, 'index.html')
+class StatsIndexTest(TestCase):
+
+    def test_stats_index_view_displays_all_owners(self):
+        owner = Owner.objects.create(first_name='name 1',last_name='name 2')
+        Dog.objects.create(dog_name='name 3', owner=owner)
+        
+        client = Client()
+        match = resolve('/stats/list_all')
+        print match.url_name
+        self.assertEqual('view_owners', match.url_name)
+        response = client.get('/stats/list_all')
+
+        self.assertTemplateUsed(response, 'index.html')
+
+        self.assertIn('name 1', response.content)
+        self.assertIn('name 2', response.content)
+        self.assertIn('name 3', response.content)
+
 
 class NewStatsTest(TestCase):
     
@@ -121,8 +130,8 @@ class NewStatsTest(TestCase):
         new_dog = Dog.objects.all()[0]
         self.assertEqual(new_owner.last_name, 'last name')
         self.assertEqual(new_dog.dog_name, 'dog name')
-
-        self.assertRedirects(response,'/stats/%d/' % (new_owner.id,))
+        # now we are sent to upload our photo
+        self.assertRedirects(response,'/stats/%d/new_photo' % (new_owner.id,))
     
     def test_stats_view_displays_only_new_owner(self):
         owner = Owner.objects.create(first_name='name 1a',last_name='name 1b')
@@ -135,10 +144,9 @@ class NewStatsTest(TestCase):
         Dog.objects.create(dog_name='name 2c', owner=other_owner)
 
         client = Client()
-        print owner.id
         response = client.get('/stats/%d/' % (owner.id,))
         
-        self.assertTemplateUsed(response, 'new_owner.html')       
+        self.assertTemplateUsed(response, 'update_owner.html')       
         
         self.assertIn('name 1a', response.content)
         self.assertIn('name 1b', response.content)
@@ -146,22 +154,45 @@ class NewStatsTest(TestCase):
         self.assertNotIn('name 2a', response.content)
         self.assertNotIn('name 2b', response.content)
         self.assertNotIn('name 2c', response.content)
+        self.assertEqual(response.context['owner'], owner)
 
-    def test_stats_view_uploads_a_file(self):
+    def test_upload_a_photo_to_existing_owner(self):
+        owner = Owner.objects.create()
+        other_owner = Owner.objects.create()
+        dog = Dog.objects.create(dog_name='fido',owner=owner)
+        client = Client()
+        path_name = '/Users/maria/Desktop/'
+        file_name = 'skull-flower.jpg'
         try:
-            f = open('/Users/maria/Desktop/sebastian.JPG')
-            postdata = {'datatype': 'photo','datafile':f}
-        
-            client = Client()
-            response= client.post('/stats/%d/', postdata)
-            self.failUnlessEqual(response.status_code, 200)
+            f = open(path_name + file_name)
+            postdata = {'photo':f}
+            match = resolve('/stats/%d/new_photo' % (owner.id))
+            self.assertEqual('add_photo',match.url_name)
+            response= client.post('/stats/%d/new_photo' % (owner.id), 
+                                  postdata)    
         finally:
             f.close()
 
-#class StatsTestCase(TestCase):
-#    def setUp(self):
-#        Stats.objects.create(first_name="Susie", last_name="Doe", dog_name="rover")
-#        Stats.ojbects.create(first_name="John", last_name="Roe", dog_name="spot")
-#    
-#    def test_
+        self.assertRedirects(response, '/stats/%d/' % (owner.id))
+        self.assertEqual(Dog.objects.all().count(), 1)
+        saved_dog = Dog.objects.all()[0]
+        self.assertEqual(saved_dog.dog_name, 'fido')
+        self.assertEqual(saved_dog.photo.name, u'dogs/skull-flower.jpg')
+
+    def test_use_default_image_if_none_updloaded(self):
+        owner = Owner.objects.create()
+        dog = Dog.objects.create(dog_name='fluffy',owner=owner)
+        client = Client()
+        match = resolve('/stats/%d/new_photo' % (owner.id))
+        self.assertEqual('add_photo',match.url_name)
+        response = client.post('/stats/%d/new_photo' % (owner.id), 
+                                  )    
+        self.assertTemplateUsed(response, 'update_owner.html')       
+        self.assertEqual(Dog.objects.all().count(), 1)
+        saved_dog = Dog.objects.all()[0]
+        self.assertEqual(saved_dog.dog_name, 'fluffy')
+        self.assertIn('example-dog.jpg',response.content)
+
+        
+
 
